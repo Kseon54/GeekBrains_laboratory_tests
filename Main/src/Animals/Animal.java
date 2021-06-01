@@ -15,12 +15,12 @@ public abstract class Animal implements ISwim, IRun {
 
     @Override
     public void swim(float distance) {
-        System.out.printf("%s%s проплыл  %.2f м.\n", name, distance > maxSwim ? " не" : "", distance);
+        System.out.printf("%s%s проплыл  %.2f м.\n", name, Math.abs(distance) > maxSwim ? " не" : "", distance);
     }
 
     @Override
     public void run(float distance) {
-        System.out.printf("%s%s бробежал  %.2f м.\n", name, distance > maxRun ? " не" : "", distance);
+        System.out.printf("%s%s бробежал  %.2f м.\n", name, Math.abs(distance) > maxRun ? " не" : "", distance);
     }
 
     public String getName() {
