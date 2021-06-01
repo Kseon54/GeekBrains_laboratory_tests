@@ -7,18 +7,12 @@ public class Dog extends Animal {
     public Dog(String name) {
         this.name = name;
         init();
-        newAnimal();
+        count++;
     }
 
     private void init() {
         this.maxRun = 500;
         this.maxSwim = 10;
-    }
-
-    @Override
-    protected void newAnimal() {
-        super.newAnimal();
-        count++;
     }
 
     public static int count() {

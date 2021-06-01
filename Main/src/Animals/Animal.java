@@ -8,6 +8,10 @@ public abstract class Animal implements ISwim, IRun {
     protected float maxSwim;
     protected String name;
 
+    public Animal() {
+        count++;
+    }
+
     @Override
     public void swim(float distance) {
         System.out.printf("%s%s проплыл  %.2f м.\n", name, distance > maxSwim ? " не" : "", distance);
@@ -32,10 +36,6 @@ public abstract class Animal implements ISwim, IRun {
 
     public float getMaxSwim() {
         return maxSwim;
-    }
-
-    protected void newAnimal() {
-        count++;
     }
 
     public static int count() {
