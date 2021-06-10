@@ -36,7 +36,6 @@ public class CalculatorFrame extends JFrame {
 
         inputArea = new JTextField();
         inputArea.setEditable(false);
-        inputArea.setText("1+2*3-4/2+√25");
 
         panel.add(inputArea, BorderLayout.CENTER);
 

@@ -20,6 +20,8 @@ public class CalcButtonActionListener implements ActionListener {
     public void actionPerformed(ActionEvent e) {
         String text = textField.getText();
 
+        if (text.equals("")) return;
+
         text = dropExtraCharacters(text);
 
         List<String> list = parsText(text);
@@ -30,11 +32,15 @@ public class CalcButtonActionListener implements ActionListener {
 
         for (ActionsOnTwo action : actions) {
             list = calculation(list, action);
-            System.out.println(list);
         }
-        list = calculation(list,ActionsOnTwo.MULTIPLY);
+        list = calculation(list, ActionsOnTwo.MULTIPLY);
 
-        System.out.println(list);
+        double tmp = Double.parseDouble(list.get(0));
+        String result;
+        if (tmp % 1 == 0) result = String.valueOf(((int) tmp));
+        else result = String.valueOf(tmp);
+
+        textField.setText(result);
     }
 
     private String removeLastChar(String s) {
