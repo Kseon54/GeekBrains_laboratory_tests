@@ -1,14 +1,14 @@
-import ActionListeners.ActionSetNameActionListener;
+import ActionListeners.ActionSetNameOperatorOnOneActionListener;
+import ActionListeners.ActionSetNameOperatorOnTwoActionListener;
 import ActionListeners.CalcButtonActionListener;
 import ActionListeners.SetNameActionListener;
 import JFrameComponents.MenuBar;
 
 import javax.swing.*;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
 import java.awt.*;
 
 import Enum.ActionsOnTwo;
+import Enum.ActionsOnOne;
 
 public class CalculatorFrame extends JFrame {
 
@@ -97,26 +97,19 @@ public class CalculatorFrame extends JFrame {
         gridLayout.setVgap(3);
         panel.setLayout(gridLayout);
 
-        ActionSetNameActionListener actionSetNameActionListener = new ActionSetNameActionListener(inputArea);
-
+        ActionSetNameOperatorOnTwoActionListener actionListenerTwo = new ActionSetNameOperatorOnTwoActionListener(inputArea);
         for (int i = 0; i < ActionsOnTwo.length; i++) {
             JButton btn = new JButton(ActionsOnTwo.getTitle(i));
-            btn.addActionListener(actionSetNameActionListener);
+            btn.addActionListener(actionListenerTwo);
             panel.add(btn);
         }
 
-        JButton btn = new JButton(String.valueOf((char) 8730));
-        btn.addActionListener(e -> {
-            if (inputArea.getText().equals("")) {
-                inputArea.setText(inputArea.getText() + btn.getText());
-                return;
-            }
-            char c = inputArea.getText().charAt(inputArea.getText().length() - 1);
-            if (String.valueOf(c).equals(btn.getText()) ||
-                    !Character.isDigit(c))
-                inputArea.setText(inputArea.getText() + btn.getText());
-        });
-        panel.add(btn);
+        ActionSetNameOperatorOnOneActionListener actionListenerOne = new ActionSetNameOperatorOnOneActionListener(inputArea);
+        for (int i = 0; i < ActionsOnOne.length; i++) {
+            JButton btn = new JButton(ActionsOnOne.getTitle(i));
+            btn.addActionListener(actionListenerOne);
+            panel.add(btn);
+        }
 
         return panel;
     }

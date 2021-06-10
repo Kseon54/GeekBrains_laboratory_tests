@@ -1,6 +1,6 @@
 package Enum;
 
-import ActionListeners.MathematicalAction;
+import ActionListeners.MathematicalOnTwoAction;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -22,11 +22,11 @@ public enum ActionsOnTwo {
         }
     }
 
-    private final MathematicalAction mathematicalAction;
+    private final MathematicalOnTwoAction mathematicalAction;
     private final String title;
     private final int priority;
 
-    ActionsOnTwo(String title, MathematicalAction mathematicalAction, int priority) {
+    ActionsOnTwo(String title, MathematicalOnTwoAction mathematicalAction, int priority) {
         this.mathematicalAction = mathematicalAction;
         this.title = title;
         this.priority = priority;
@@ -51,7 +51,7 @@ public enum ActionsOnTwo {
         return title;
     }
 
-    public MathematicalAction getMathematicalAction() {
+    public MathematicalOnTwoAction getMathematicalAction() {
         return mathematicalAction;
     }
 

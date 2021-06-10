@@ -2,56 +2,59 @@ package ActionListeners;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 import Enum.ActionsOnTwo;
+import Enum.ActionsOnOne;
+import base.BaseActionListener;
 
-public class CalcButtonActionListener implements ActionListener {
-    private final JTextField textField;
+public class CalcButtonActionListener extends BaseActionListener {
 
-    public CalcButtonActionListener(JTextField textField) {
-        this.textField = textField;
+    public CalcButtonActionListener(JTextField inputArea) {
+        super(inputArea);
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        String text = textField.getText();
+        String text = inputArea.getText();
 
         if (text.equals("")) return;
 
-        text = dropExtraCharacters(text);
-
         List<String> list = parsText(text);
 
-        list = countingSquareRoots(list);
-
-        ActionsOnTwo[] actions = ActionsOnTwo.getSortPriority();
-
-        for (ActionsOnTwo action : actions) {
-            list = calculation(list, action);
+        ActionsOnOne[] actionsOnOnes = ActionsOnOne.getSortPriority();
+        for (ActionsOnOne action : actionsOnOnes) {
+            list = calculationActionOnOne(list, action);
         }
-        list = calculation(list, ActionsOnTwo.MULTIPLY);
+
+        list = dropExtraCharacters(list);
+
+        System.out.println(list);
+
+        if (list.isEmpty()) return;
+
+        ActionsOnTwo[] actionsOnTwos = ActionsOnTwo.getSortPriority();
+        for (ActionsOnTwo action : actionsOnTwos) {
+            list = calculationActionOnTwo(list, action);
+        }
+
+        list = calculationActionOnTwo(list, ActionsOnTwo.MULTIPLY);
 
         double tmp = Double.parseDouble(list.get(0));
         String result;
         if (tmp % 1 == 0) result = String.valueOf(((int) tmp));
         else result = String.valueOf(tmp);
 
-        textField.setText(result);
+        inputArea.setText(result);
     }
 
-    private String removeLastChar(String s) {
-        return (s.length() == 0) ? "" : (s.substring(0, s.length() - 1));
-    }
-
-    private String dropExtraCharacters(String text) {
-        if (String.valueOf(text.charAt(text.length() - 1)).equals(String.valueOf((char) 8730)))
-            text = removeLastChar(text);
-        if (ActionsOnTwo.isThereSuchTitle(String.valueOf(text.charAt(text.length() - 1)))) text = removeLastChar(text);
-        if (ActionsOnTwo.isThereSuchTitle(String.valueOf(text.charAt(text.length() - 1)))) text = removeLastChar(text);
+    private List<String> dropExtraCharacters(List<String> list) {
+        if (list.isEmpty()) return list;
+        List<String> text = new ArrayList<>(list);
+        if (ActionsOnTwo.isThereSuchTitle(text.get(text.size() - 1))) text.remove(text.size() - 1);
+        if (ActionsOnTwo.isThereSuchTitle(text.get(text.size() - 1))) text.remove(text.size() - 1);
         return text;
     }
 
@@ -73,19 +76,24 @@ public class CalcButtonActionListener implements ActionListener {
         return list;
     }
 
-    private List<String> countingSquareRoots(List<String> strings) {
+    private List<String> calculationActionOnOne(List<String> strings, ActionsOnOne action) {
         List<String> list = new ArrayList<>(strings);
         for (int i = 0; i < list.size(); i++) {
             String s = list.get(i);
-            if (s.charAt(0) == (char) 8730) {
-                s = s.substring(1);
-                list.set(i, String.valueOf(Math.sqrt(Double.parseDouble(s))));
+            if (s.contains(action.getTitle())) {
+                if (s.length() <= action.getTitle().length()) {
+                    list.remove(i);
+                    i--;
+                    continue;
+                }
+                s = s.substring(action.getTitle().length());
+                list.set(i, String.valueOf(action.getMathematicalAction().calc(Double.parseDouble(s))));
             }
         }
         return list;
     }
 
-    private List<String> calculation(List<String> list, ActionsOnTwo actions) {
+    private List<String> calculationActionOnTwo(List<String> list, ActionsOnTwo actions) {
         List<String> resList = new ArrayList<>(list);
         for (int i = 0; i < resList.size(); i++) {
             if (actions.getTitle().equals(resList.get(i))) {
