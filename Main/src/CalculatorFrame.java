@@ -20,7 +20,7 @@ public class CalculatorFrame extends JFrame {
 
         setBounds(100, 100, 600, 500);
 
-        setJMenuBar(MenuBar.getMenuBar());
+        setJMenuBar(new MenuBar());
 
         setLayout(new BorderLayout());
 
