@@ -9,7 +9,8 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 public enum ActionsOnOne {
-    ROOT(String.valueOf((char) 8730), Math::sqrt, 0);
+    ROOT(String.valueOf((char) 8730), Math::sqrt, 0),
+    LOG("log",Math::log,0);
 
     public final static int length = values().length;
 
