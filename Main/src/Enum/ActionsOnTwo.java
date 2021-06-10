@@ -6,10 +6,11 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public enum ActionsOnTwo {
-    MULTIPLY("*", (a, b) -> a * b, 0),
-    DIVIDE("/", (a, b) -> a / b, 1),
-    MINUS("-", (a, b) -> a - b, 2),
-    PLUS("+", Double::sum, 2);
+    MULTIPLY("*", (a, b) -> a * b, 1),
+    DIVIDE("/", (a, b) -> a / b, 2),
+    MINUS("-", (a, b) -> a - b, 3),
+    PLUS("+", Double::sum, 3),
+    EXPONENTIATION("^", Math::pow,0);
 
     public final static int length = values().length;
 
