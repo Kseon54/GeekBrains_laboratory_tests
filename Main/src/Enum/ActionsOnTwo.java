@@ -10,7 +10,7 @@ public enum ActionsOnTwo {
     DIVIDE("/", (a, b) -> a / b, 2),
     MINUS("-", (a, b) -> a - b, 3),
     PLUS("+", Double::sum, 3),
-    EXPONENTIATION("^", Math::pow,0);
+    MULTIPLICATION("^", Math::pow,0);
 
     public final static int length = values().length;
 
