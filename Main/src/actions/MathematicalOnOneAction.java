@@ -1,4 +1,4 @@
-package ActionListeners;
+package actions;
 
 @FunctionalInterface
 public interface MathematicalOnOneAction {

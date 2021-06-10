@@ -31,8 +31,6 @@ public class CalcButtonActionListener extends BaseActionListener {
 
         list = dropExtraCharacters(list);
 
-        System.out.println(list);
-
         if (list.isEmpty()) return;
 
         ActionsOnTwo[] actionsOnTwos = ActionsOnTwo.getSortPriority();

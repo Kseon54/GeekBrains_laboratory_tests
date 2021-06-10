@@ -1,6 +1,6 @@
 package Enum;
 
-import ActionListeners.MathematicalOnTwoAction;
+import actions.MathematicalOnTwoAction;
 
 import java.util.*;
 import java.util.stream.Collectors;
