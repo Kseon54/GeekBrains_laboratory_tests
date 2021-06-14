@@ -2,17 +2,15 @@ package ActionListeners;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 import Enum.ActionsOnTwo;
 import Enum.ActionsOnOne;
+import base.BaseActionListener;
 
-public class SetPointActionListener implements ActionListener {
-
-    private final JTextField inputArea;
+public class SetPointActionListener extends BaseActionListener {
 
     public SetPointActionListener(JTextField inputArea) {
-        this.inputArea = inputArea;
+        super(inputArea);
     }
 
     @Override
