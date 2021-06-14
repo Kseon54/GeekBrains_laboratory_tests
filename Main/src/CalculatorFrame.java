@@ -1,7 +1,4 @@
-import ActionListeners.ActionSetNameOperatorOnOneActionListener;
-import ActionListeners.ActionSetNameOperatorOnTwoActionListener;
-import ActionListeners.CalcButtonActionListener;
-import ActionListeners.SetNameActionListener;
+import ActionListeners.*;
 import JFrameComponents.MenuBar;
 
 import javax.swing.*;
@@ -97,7 +94,13 @@ public class CalculatorFrame extends JFrame {
         gridLayout.setVgap(3);
         panel.setLayout(gridLayout);
 
+
+        JButton btnPoint = new JButton(".");
+        btnPoint.addActionListener(new SetPointActionListener(inputArea));
+        panel.add(btnPoint);
         ActionSetNameOperatorOnTwoActionListener actionListenerTwo = new ActionSetNameOperatorOnTwoActionListener(inputArea);
+
+
         for (int i = 0; i < ActionsOnTwo.length; i++) {
             JButton btn = new JButton(ActionsOnTwo.getTitle(i));
             btn.addActionListener(actionListenerTwo);
