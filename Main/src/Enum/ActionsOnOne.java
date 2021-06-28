@@ -2,6 +2,7 @@ package Enum;
 
 import actions.MathematicalOnOneAction;
 
+import javax.rmi.CORBA.Util;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -10,6 +11,16 @@ import java.util.stream.Collectors;
 
 public enum ActionsOnOne {
     ROOT(String.valueOf((char) 8730), Math::sqrt, 0),
+    FACT("!", (e)->{
+        int n =1;
+        int a=1;
+        while (n<e)
+        {
+            n++;
+            a*=n;
+        }
+        return a;
+    }, 0),
     LOG("log",Math::log,0);
 
     public final static int length = values().length;

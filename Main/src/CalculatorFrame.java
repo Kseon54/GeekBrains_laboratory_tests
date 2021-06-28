@@ -97,7 +97,7 @@ public class CalculatorFrame extends JFrame {
 
     private JPanel createRightMeinPanel() {
         JPanel panel = new JPanel();
-        GridLayout gridLayout = new GridLayout(4, 2);
+        GridLayout gridLayout = new GridLayout(4, 3);
         gridLayout.setHgap(3);
         gridLayout.setVgap(3);
         panel.setLayout(gridLayout);
