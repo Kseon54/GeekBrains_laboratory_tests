@@ -30,7 +30,6 @@ public class Main {
 
         int count = 0;
         for (Current current : currents) {
-//            System.out.println(current.toString());
             if (current.isParticipates()) count++;
         }
         System.out.printf("Справилость %d участников", count);
