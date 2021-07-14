@@ -16,11 +16,11 @@ public class Main {
         try {
             System.out.println(arrayStringToArrayInt(strings));
         } catch (MyArraySizeException | MyArrayDataException e) {
-            System.out.println(e.getMessage());
+            e.printStackTrace();
         }
     }
 
-    public static int arrayStringToArrayInt(String[][] strings) {
+    public static int arrayStringToArrayInt(String[][] strings) throws MyArraySizeException, MyArrayDataException {
         if (strings.length != N) throw new MyArraySizeException(String.format("Ошибка. Массив не %dх%d.", N, N));
         for (String[] string : strings)
             if (string.length != N) throw new MyArraySizeException(String.format("Ошибка. Массив не %dх%d.", N, N));
@@ -31,7 +31,7 @@ public class Main {
                 try {
                     a += Integer.parseInt(strings[i][j].trim());
                 } catch (Exception e) {
-                    throw new MyArrayDataException(String.format("Ошибка. Элемент [%d][%d] не int.", i + 1, j + 1));
+                    throw new MyArrayDataException(String.format("Ошибка. Элемент [%d][%d] не int.", i + 1, j + 1), e);
                 }
             }
         }
