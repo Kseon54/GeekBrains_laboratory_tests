@@ -30,7 +30,7 @@ public class Main {
             for (int j = 0; j < N; j++) {
                 try {
                     a += Integer.parseInt(strings[i][j].trim());
-                } catch (Exception e) {
+                } catch (NumberFormatException e) {
                     throw new MyArrayDataException(String.format("Ошибка. Элемент [%d][%d] не int.", i + 1, j + 1), e);
                 }
             }
