@@ -27,6 +27,8 @@ public class ButtonSendAction implements ActionListener {
         Message message = new Message(textArea.getText());
         textChatPanel.addMessage(message);
         textArea.setText("");
+        textChatPanel.repaint();
+        textChatPanel.revalidate();
     }
 
     private boolean checkText() {
