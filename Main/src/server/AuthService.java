@@ -14,17 +14,13 @@ public class AuthService {
                 new Entry("name3", "nick3", "pass3"));
     }
 
+    public Optional<Entry> findUserByName(String name) {
+        return entries.stream()
+                .filter(entry -> entry.login.equals(name))
+                .findFirst();
+    }
+
     public Optional<Entry> findUserByLoginAndPassword(String login, String password) {
-        /**
-        for (AuthService.Entry entry : entries) {
-            if (entry.login.equals(login) && entry.password.equals(password)) {
-                return Optional.of(entry);
-            }
-        }
-
-        return Optional.empty();
-         */
-
         return entries.stream()
                 .filter(entry -> entry.login.equals(login) && entry.password.equals(password))
                 .findFirst();

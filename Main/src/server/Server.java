@@ -5,6 +5,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class Server {
 
@@ -45,43 +46,48 @@ public class Server {
 
     public boolean isUserOccupied(String name) {
         /**
-        for(ClineHandler user : loggedUser) {
-            if (user.getName().equals(user)) {
-                return true;
-            }
-        }
-        return false;
-        */
+         for(ClineHandler user : loggedUser) {
+         if (user.getName().equals(user)) {
+         return true;
+         }
+         }
+         return false;
+         */
 
         /**
          loggedUser.stream()
-             .filter(u -> u.getName().equals(u))
-             .findFirst()
-             .isPresent();
+         .filter(u -> u.getName().equals(u))
+         .findFirst()
+         .isPresent();
          */
 
         return loggedUser.stream()
                 .anyMatch(u -> u.getName().equals(name));
-
     }
 
     public void broadcastMessage(String outboundMessage) {
         /**
          for (ClientHandler user: loggedUser) {
-            user.sendMessage(outboundMessage);
+         user.sendMessage(outboundMessage);
          }
          */
 
         /**
-        loggedUser.forEach(new Consumer<ClientHandler>() {
-            @Override
-            public void accept(ClientHandler clientHandler) {
-                clientHandler.sendMessage(outboundMessage);
-            }
+         loggedUser.forEach(new Consumer<ClientHandler>() {
+        @Override public void accept(ClientHandler clientHandler) {
+        clientHandler.sendMessage(outboundMessage);
+        }
         });
          */
 
         loggedUser.forEach(clientHandler -> clientHandler.sendMessage(outboundMessage));
+    }
+
+    public void privateMessage(String recipientUserName, String outboundMessage) {
+        Optional<ClientHandler> maybeClientHandler = loggedUser.stream()
+                .filter(clientHandler -> clientHandler.getName().equals(recipientUserName))
+                .findFirst();
+        maybeClientHandler.ifPresent(clientHandler -> clientHandler.sendMessage(outboundMessage));
     }
 
 }

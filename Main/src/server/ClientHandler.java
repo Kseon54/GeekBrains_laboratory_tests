@@ -107,8 +107,27 @@ public class ClientHandler {
             if (inboundMessage.equals("-exit")) {
                 break;
             }
-            server.broadcastMessage(inboundMessage);
+            if (inboundMessage.charAt(0) == '/') {
+                processingCommand(inboundMessage);
+            } else server.broadcastMessage(String.format("%s:\t%s", name, inboundMessage));
         }
     }
 
+    private void processingCommand(String inboundMessage) {
+        String[] splitMessageCommand = inboundMessage.split( " ", 2);
+        switch (splitMessageCommand[0]) {
+            case ("/w"):
+                String[] splitMessage = splitMessageCommand[1].split(" ",2);
+                if (server.isUserOccupied(splitMessage[0])) {
+                    sendMessage(String.format("[I -> %s]\t%s", splitMessage[0], splitMessage[1]));
+                    server.privateMessage(splitMessage[0], String.format("[%s -> I]\t%s", name, splitMessage[1]));
+                } else sendMessage(String.format("user %s was not found", splitMessage[0]));
+
+                break;
+            default:
+                sendMessage("The command was not found");
+                break;
+        }
+
+    }
 }
