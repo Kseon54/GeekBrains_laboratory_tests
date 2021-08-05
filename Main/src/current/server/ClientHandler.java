@@ -8,16 +8,21 @@ import java.util.Optional;
 
 public class ClientHandler {
 
-    private Server server;
-    private DataInputStream in;
-    private DataOutputStream out;
+    private final static Long TIME_LIMIT_CONNECT_SERVER = 120L * 1000L;
+
+    private final Server server;
+    private final DataInputStream in;
+    private final DataOutputStream out;
     private String name;
+
+    private boolean isAlive;
 
     public ClientHandler(Server server, Socket socket) {
         try {
             this.server = server;
             in = new DataInputStream(socket.getInputStream());
             out = new DataOutputStream(socket.getOutputStream());
+            isAlive = true;
 
             new Thread(() -> {
                 try {
@@ -66,8 +71,12 @@ public class ClientHandler {
         sendMessage("Greeting you in the Outstanding Chat.");
         sendMessage("Please do authentication. Template is: -auth [login] [password]");
 
-        while (true) {
+        Thread authenticationTime = CreateTimerCloseConnections();
+        authenticationTime.start();
+
+        while (isAlive) {
             String maybeCredentials = in.readUTF();
+            if (!isAlive) return;
             /** sample: -auth login1 password1 */
             if (maybeCredentials.startsWith("-auth")) {
                 String[] credentials = maybeCredentials.split("\\s");
@@ -83,6 +92,7 @@ public class ClientHandler {
                         sendMessage("Welcome.");
                         server.broadcastMessage(String.format("User[%s] entered chat.", name));
                         server.subscribe(this);
+                        authenticationTime.interrupt();
                         return;
                     } else {
                         sendMessage("Current user is already logged in");
@@ -114,4 +124,20 @@ public class ClientHandler {
         }
     }
 
+    private Thread CreateTimerCloseConnections() {
+        return new Thread(() -> {
+            long timeStart = System.currentTimeMillis();
+            while (!Thread.interrupted()) {
+                if (System.currentTimeMillis() - timeStart >= TIME_LIMIT_CONNECT_SERVER) {
+                    sendMessage("Time Out");
+                    isAlive = false;
+                    return;
+                }
+            }
+        });
+    }
+
+    public boolean isAlive() {
+        return isAlive;
+    }
 }
