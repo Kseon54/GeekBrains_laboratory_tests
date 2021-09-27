@@ -8,7 +8,7 @@ import java.util.Optional;
 
 public class ClientHandler {
 
-    private final static Long TIME_LIMIT_CONNECT_SERVER = 120L * 1000L;
+    private final static Long TIME_LIMIT_CONNECT_SERVER = 20L * 1000L;
 
     private final Server server;
     private final DataInputStream in;
