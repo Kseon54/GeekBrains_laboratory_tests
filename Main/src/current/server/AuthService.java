@@ -1,68 +1,15 @@
 package current.server;
 
+import current.server.db.model.User;
+import current.server.db.services.UserService;
+
 import java.util.*;
 
 public class AuthService {
 
-    private static final List<Entry> entries = new ArrayList<>();
+    UserService userService = new UserService();
 
-    static {
-        entries.add(new Entry("name1", "nick1", "pass1"));
-        entries.add(new Entry("name2", "nick2", "pass2"));
-        entries.add(new Entry("name3", "nick3", "pass3"));
+    public Optional<User> findUserByLoginAndPassword(String login, String password) {
+        return userService.findByLoginAndPass(login,password);
     }
-
-    public Optional<Entry> findUserByLoginAndPassword(String login, String password) {
-        /**
-         for (AuthService.Entry entry : entries) {
-         if (entry.login.equals(login) && entry.password.equals(password)) {
-         return Optional.of(entry);
-         }
-         }
-
-         return Optional.empty();
-         */
-
-        return entries.stream()
-                .filter(entry -> entry.login.equals(login) && entry.password.equals(password))
-                .findFirst();
-    }
-
-    static class Entry {
-        String name;
-        String login;
-        String password;
-
-        Entry(String name, String login, String password) {
-            this.name = name;
-            this.login = login;
-            this.password = password;
-        }
-
-        String getName() {
-            return name;
-        }
-
-        String getLogin() {
-            return login;
-        }
-
-        String getPassword() {
-            return password;
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
-            Entry entry = (Entry) o;
-            return Objects.equals(name, entry.name) && Objects.equals(login, entry.login) && Objects.equals(password, entry.password);
-        }
-
-        @Override
-        public int hashCode() {
-            return Objects.hash(name, login, password);
-        }
-    }
-
 }

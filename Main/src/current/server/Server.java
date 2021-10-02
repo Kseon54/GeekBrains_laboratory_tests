@@ -1,5 +1,8 @@
 package current.server;
 
+import current.server.db.model.User;
+import current.server.db.services.UserService;
+
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -7,6 +10,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Server {
+
+    UserService userService = new UserService();
 
     private ServerSocket serverSocket;
     private final List<ClientHandler> loggedUser;
@@ -27,6 +32,15 @@ public class Server {
         }
     }
 
+    public boolean rename(User user, String newNick, String pass) {
+        if (user.getPass().equals(pass)) {
+            user.setNick(newNick);
+            userService.update(user);
+            return true;
+        }
+        return false;
+    }
+
     public AuthService getAuthService() {
         return authService;
     }
@@ -45,19 +59,19 @@ public class Server {
 
     public synchronized boolean isUserOccupied(String name) {
         /**
-        for(ClineHandler user : loggedUser) {
-            if (user.getName().equals(user)) {
-                return true;
-            }
-        }
-        return false;
-        */
+         for(ClineHandler user : loggedUser) {
+         if (user.getName().equals(user)) {
+         return true;
+         }
+         }
+         return false;
+         */
 
         /**
          loggedUser.stream()
-             .filter(u -> u.getName().equals(u))
-             .findFirst()
-             .isPresent();
+         .filter(u -> u.getName().equals(u))
+         .findFirst()
+         .isPresent();
          */
 
         return loggedUser.stream()
@@ -65,23 +79,22 @@ public class Server {
 
     }
 
-    public synchronized void broadcastMessage(String outboundMessage) {
+    public synchronized void broadcastMessage(String nick, String outboundMessage) {
         /**
          for (ClientHandler user: loggedUser) {
-            user.sendMessage(outboundMessage);
+         user.sendMessage(outboundMessage);
          }
          */
 
         /**
-        loggedUser.forEach(new Consumer<ClientHandler>() {
-            @Override
-            public void accept(ClientHandler clientHandler) {
-                clientHandler.sendMessage(outboundMessage);
-            }
+         loggedUser.forEach(new Consumer<ClientHandler>() {
+        @Override public void accept(ClientHandler clientHandler) {
+        clientHandler.sendMessage(outboundMessage);
+        }
         });
          */
 
-        loggedUser.forEach(clientHandler -> clientHandler.sendMessage(outboundMessage));
+        loggedUser.forEach(clientHandler -> clientHandler.sendMessage(nick + ":-> " + outboundMessage));
     }
 
 }

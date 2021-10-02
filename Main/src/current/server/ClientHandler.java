@@ -1,5 +1,7 @@
 package current.server;
 
+import current.server.db.model.User;
+
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -13,7 +15,7 @@ public class ClientHandler {
     private final Server server;
     private final DataInputStream in;
     private final DataOutputStream out;
-    private String name;
+    private User user;
 
     private boolean isAlive;
 
@@ -42,7 +44,7 @@ public class ClientHandler {
 
     private void closeConnection(Socket socket) {
         server.unsubscribe(this);
-        server.broadcastMessage(String.format("User[%s] is out.", name));
+        server.broadcastMessage("Server", String.format("User[%s] is out.", user.getNick()));
 
         try {
             in.close();
@@ -64,7 +66,7 @@ public class ClientHandler {
     }
 
     public String getName() {
-        return name;
+        return user.getNick();
     }
 
     private void doAuthentication() throws IOException {
@@ -81,16 +83,15 @@ public class ClientHandler {
             if (maybeCredentials.startsWith("-auth")) {
                 String[] credentials = maybeCredentials.split("\\s");
 
-                Optional<AuthService.Entry> maybeUser = server.getAuthService()
+                Optional<User> maybeUser = server.getAuthService()
                         .findUserByLoginAndPassword(credentials[1], credentials[2]);
 
                 if (maybeUser.isPresent()) {
-                    AuthService.Entry user = maybeUser.get();
-                    if (server.isNotUserOccupied(user.getName())) {
-                        name = user.getName();
+                    this.user = maybeUser.get();
+                    if (server.isNotUserOccupied(this.user.getNick())) {
                         sendMessage("AUTH OK.");
                         sendMessage("Welcome.");
-                        server.broadcastMessage(String.format("User[%s] entered chat.", name));
+                        server.broadcastMessage("Server", String.format("User[%s] entered chat.", this.user.getNick()));
                         server.subscribe(this);
                         authenticationTime.interrupt();
                         return;
@@ -120,7 +121,16 @@ public class ClientHandler {
             if (inboundMessage.equals("-exit")) {
                 break;
             }
-            server.broadcastMessage(inboundMessage);
+            if (inboundMessage.startsWith("-rename")) {
+                String[] credentials = inboundMessage.split("\\s");
+                String name = user.getNick();
+                boolean complete = server.rename(user, credentials[1], credentials[2]);
+                if (complete) server.broadcastMessage(
+                        "Server", name + " update nickname, his new nickname: " + credentials[1]);
+                else sendMessage("Sorry your nickname is unchanged");
+                continue;
+            }
+            server.broadcastMessage(user.getNick(), inboundMessage);
         }
     }
 
