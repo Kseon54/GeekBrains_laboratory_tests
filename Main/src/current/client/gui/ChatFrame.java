@@ -1,5 +1,7 @@
 package current.client.gui;
 
+import current.client.controllers.WindowController;
+
 import javax.swing.*;
 import java.awt.*;
 import java.util.function.Consumer;
@@ -26,6 +28,8 @@ public class ChatFrame {
         mainFrame.add(createTop(), BorderLayout.CENTER);
         mainFrame.add(createBottom(), BorderLayout.SOUTH);
 
+        mainFrame.addWindowListener(new WindowController(chattingArea));
+
         mainFrame.setVisible(true);
     }
 
@@ -46,7 +50,7 @@ public class ChatFrame {
 
         chattingArea = new JTextArea();
         chattingArea.setEditable(false);
-        jPanel.add(chattingArea, BorderLayout.CENTER);
+        jPanel.add(new JScrollPane(chattingArea), BorderLayout.CENTER);
 
         return jPanel;
     }
