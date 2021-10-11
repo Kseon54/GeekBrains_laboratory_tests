@@ -6,40 +6,48 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
+import java.net.SocketTimeoutException;
 import java.util.Optional;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class ClientHandler {
 
-    private final static Long TIME_LIMIT_CONNECT_SERVER = 20L * 1000L;
+    private final static int TIME_LIMIT_CONNECT_SERVER = 20 * 1000;
 
     private final Server server;
+    private final Socket socket;
     private final DataInputStream in;
     private final DataOutputStream out;
     private User user;
 
-    private boolean isAlive;
-
     public ClientHandler(Server server, Socket socket) {
         try {
             this.server = server;
+            this.socket = socket;
             in = new DataInputStream(socket.getInputStream());
             out = new DataOutputStream(socket.getOutputStream());
-            isAlive = true;
 
-            new Thread(() -> {
-                try {
-                    doAuthentication();
-                    listenMessages();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                } finally {
-                    closeConnection(socket);
-                }
-            })
-                    .start();
+            CreateExecutorService();
         } catch (IOException e) {
             throw new RuntimeException("Something went wrong during client establishing...", e);
         }
+    }
+
+    private void CreateExecutorService() {
+        ExecutorService executor = Executors.newFixedThreadPool(1);
+        executor.submit(new Thread(() -> {
+            try {
+                doAuthentication();
+                listenMessages();
+            } catch (IOException e) {
+                e.printStackTrace();
+            } finally {
+                closeConnection(socket);
+            }
+        }));
+
+        executor.shutdown();
     }
 
     private void closeConnection(Socket socket) {
@@ -72,38 +80,37 @@ public class ClientHandler {
     private void doAuthentication() throws IOException {
         sendMessage("Greeting you in the Outstanding Chat.");
         sendMessage("Please do authentication. Template is: -auth [login] [password]");
+        socket.setSoTimeout(TIME_LIMIT_CONNECT_SERVER);
+        try {
+            while (true) {
+                String maybeCredentials = in.readUTF();
+                /** sample: -auth login1 password1 */
+                if (maybeCredentials.startsWith("-auth")) {
+                    String[] credentials = maybeCredentials.split("\\s");
 
-        Thread authenticationTime = CreateTimerCloseConnections();
-        authenticationTime.start();
+                    Optional<User> maybeUser = server.getAuthService()
+                            .findUserByLoginAndPassword(credentials[1], credentials[2]);
 
-        while (isAlive) {
-            String maybeCredentials = in.readUTF();
-            if (!isAlive) return;
-            /** sample: -auth login1 password1 */
-            if (maybeCredentials.startsWith("-auth")) {
-                String[] credentials = maybeCredentials.split("\\s");
-
-                Optional<User> maybeUser = server.getAuthService()
-                        .findUserByLoginAndPassword(credentials[1], credentials[2]);
-
-                if (maybeUser.isPresent()) {
-                    this.user = maybeUser.get();
-                    if (server.isNotUserOccupied(this.user.getNick())) {
-                        sendMessage("AUTH OK.");
-                        sendMessage("Welcome.");
-                        server.broadcastMessage("Server", String.format("User[%s] entered chat.", this.user.getNick()));
-                        server.subscribe(this);
-                        authenticationTime.interrupt();
-                        return;
+                    if (maybeUser.isPresent()) {
+                        this.user = maybeUser.get();
+                        if (server.isNotUserOccupied(this.user.getNick())) {
+                            sendMessage("AUTH OK.");
+                            sendMessage("Welcome.");
+                            server.broadcastMessage("Server", String.format("User[%s] entered chat.", this.user.getNick()));
+                            server.subscribe(this);
+                            return;
+                        } else {
+                            sendMessage("Current user is already logged in");
+                        }
                     } else {
-                        sendMessage("Current user is already logged in");
+                        sendMessage("Invalid credentials.");
                     }
                 } else {
-                    sendMessage("Invalid credentials.");
+                    sendMessage("Invalid auth operation");
                 }
-            } else {
-                sendMessage("Invalid auth operation");
             }
+        } catch (SocketTimeoutException s) {
+            sendMessage("Time Out");
         }
     }
 
@@ -132,22 +139,5 @@ public class ClientHandler {
             }
             server.broadcastMessage(user.getNick(), inboundMessage);
         }
-    }
-
-    private Thread CreateTimerCloseConnections() {
-        return new Thread(() -> {
-            long timeStart = System.currentTimeMillis();
-            while (!Thread.interrupted()) {
-                if (System.currentTimeMillis() - timeStart >= TIME_LIMIT_CONNECT_SERVER) {
-                    sendMessage("Time Out");
-                    isAlive = false;
-                    return;
-                }
-            }
-        });
-    }
-
-    public boolean isAlive() {
-        return isAlive;
     }
 }
