@@ -2,7 +2,6 @@ package Test;
 
 import Test.annotations.AfterSuite;
 import Test.annotations.BeforeSuite;
-import main.Main;
 import Test.annotations.Test;
 
 import java.lang.reflect.InvocationTargetException;
@@ -13,6 +12,9 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public final class TestStarted {
+
+    public final static int MIN_PRIORITY_TEST = 1;
+    public final static int MAX_PRIORITY_TEST = 10;
 
     private TestStarted() {
     }
@@ -37,28 +39,26 @@ public final class TestStarted {
             }
         } catch (IndexOutOfBoundsException ignored) {
         }
-
     }
 
     private static void accomplishmentTests(Class aClass) {
         List<Method> tests = getMethodByAnnotation(aClass, Test.class);
         tests.forEach(test -> checkMethod(test, Test.class));
         tests.stream().map(method -> method.getAnnotation(Test.class)).forEach(test -> {
-            if (test.priority() < 1 || test.priority() > 10)
+            if (test.priority() < MIN_PRIORITY_TEST || test.priority() > MAX_PRIORITY_TEST)
                 throw new IllegalArgumentException("The priority should be from one to ten");
         });
 
         tests.stream()
                 .sorted(Comparator.comparingInt(value -> (value.getAnnotation(Test.class)).priority()))
-                .collect(Collectors.toList());
-
-        tests.forEach(test -> {
-            try {
-                test.invoke(aClass.getDeclaredConstructor().newInstance());
-            } catch (IllegalAccessException | NoSuchMethodException | InstantiationException | InvocationTargetException e) {
-                e.printStackTrace();
-            }
-        });
+                .collect(Collectors.toList())
+                .forEach(test -> {
+                    try {
+                        test.invoke(aClass.getDeclaredConstructor().newInstance());
+                    } catch (IllegalAccessException | NoSuchMethodException | InstantiationException | InvocationTargetException e) {
+                        e.printStackTrace();
+                    }
+                });
     }
 
     private static List<Method> getMethodByAnnotation(Class aClass, Class annotation) {
